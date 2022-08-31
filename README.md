@@ -7,6 +7,7 @@ It is helpful for those who study R from 0 to expert.
 
 ## Lesson1
 Basic: Read in/out data, data structure, dataframe manipulation
+*Exer is the homework results of Lesson1
 
 ## Lesson2
 Middle level: Data visualization 
