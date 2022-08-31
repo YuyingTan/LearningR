@@ -1,0 +1,193 @@
+---
+title: "Lesson_2_Datavisualization"
+author: "Yuying_Tan"
+date: "August 31, 2022"
+output: 
+  html_document: 
+    toc: yes
+---
+
+## Read in data
+```{r message=FALSE, warning=FALSE}
+library(readr)
+HairEyeColor <- read_csv("HairEyeColor.csv")
+iris <- read_csv("iris.csv")
+head(HairEyeColor)
+head(iris)
+```
+
+## dplyr commands
+first install tidyverse
+
+### filter
+```{r}
+library(tidyverse)
+blackhairdata<-filter(HairEyeColor,hair=="Black")
+# or you can use blackhairdata%>%filter(hair=="Black")
+head(blackhairdata)
+```
+
+### select
+```{r}
+iris_Sepal<-iris%>%select(Sepal.Length,Sepal.Width)
+head(iris_Sepal)
+iris_Petal<-select(iris, -Sepal.Length, -Sepal.Width)
+head(iris_Petal)
+```
+
+### mutate
+compute areas
+```{r}
+iris_Sepal%>%mutate(area.sepal=Sepal.Length*Sepal.Width)
+iris_Petal%>%mutate(ratio.petal=Petal.Length/Petal.Width)
+```
+
+### summarise
+```{r}
+iris%>%summarise(meanpetal_l=mean(Petal.Length),sd_petal_l=sd(Petal.Length),npetal=n())
+
+iris[,-5]%>%summarise_all(mean)
+iris[,-5]%>%summarise_all(sd)
+```
+
+### group_by
+```{r}
+iris%>%group_by(Species)
+#group_by(iris,Species)
+
+iris%>%group_by(Species)%>%summarise_all(mean)
+iris%>%group_by(Species)%>%summarise_all(sd)
+```
+
+## Univariate
+
+### single cat
+```{r message=FALSE, warning=FALSE}
+attach(HairEyeColor)
+hairtab<-table(hair)
+hairtab
+proptabhair<-prop.table(hairtab)*100
+proptabhair
+
+barplot(hairtab, col=c("black","gray","brown","red"), xlab="Hair Color", ylab="Counts")
+barplot(proptabhair, col=c("black","gray","brown","red"), xlab="Hair Color", ylab="Percentage", ylim=c(0,100))
+```
+
+
+### single continuous
+```{r}
+summary(iris[,-5])
+var(iris[,-5])
+var(iris$Sepal.Length)
+
+hist(iris$Sepal.Length, main=" ", xlab="Sepal Length", col="pink", probability = T)
+lines(density(iris$Sepal.Length),lwd=3)
+
+boxplot(iris$Sepal.Length, col="lightblue")
+
+qqnorm(iris$Sepal.Length)
+qqline(iris$Sepal.Length)
+
+shapiro.test(iris$Sepal.Length)
+shapiro.test(log(iris$Sepal.Length))
+
+hist(log(iris$Sepal.Length), main=" ", xlab="Sepal Length", col="pink", probability = T)
+```
+
+
+## Bivariate
+
+### both cat
+```{r}
+hetab<-table(eye,hair)
+hetab
+round(prop.table(hetab),2)
+
+chisq.test(hetab)
+
+barplot(hetab, legend=T, col=c("blue","brown","green","gray"))
+
+barplot(hetab, legend=T, col=c("blue","brown","green","gray"), beside=T)
+```
+
+
+### one cat and one count
+```{r}
+## summary stats
+tapply(iris$Sepal.Length,iris$Species, summary)
+
+
+library(lattice)
+histogram(~iris$Sepal.Length|iris$Species)
+
+boxplot(iris$Sepal.Length~iris$Species)
+
+
+par(mfrow=c(1,3))
+qqnorm(iris$Sepal.Length[iris$Species=="setosa"])
+qqline(iris$Sepal.Length[iris$Species=="setosa"])
+
+qqnorm(iris$Sepal.Length[iris$Species=="versicolor"])
+qqline(iris$Sepal.Length[iris$Species=="versicolor"])
+
+qqnorm(iris$Sepal.Length[iris$Species=="virginica"])
+qqline(iris$Sepal.Length[iris$Species=="virginica"])
+par(mfrow=c(1,1))
+
+anova(aov(Sepal.Length~Species,data=iris))
+summary(lm(Sepal.Length~Species,data=iris))
+```
+
+
+### both cont
+```{r}
+# Pearson correlation
+cor(iris$Sepal.Length,iris$Petal.Length)
+plot(iris$Sepal.Length,iris$Petal.Length)
+plot(iris$Sepal.Length,iris$Petal.Length, pch=1)
+abline(lm(iris$Petal.Length~iris$Sepal.Length), col="red", lwd=3)
+
+library(lattice)
+xyplot(iris$Sepal.Length~iris$Petal.Length|iris$Species)
+
+plot(iris$Petal.Length,iris$Sepal.Length, col=as.numeric(as.factor(iris$Species)))
+legend("topleft",legend=c("Setosa","Versicolor","Virginica"), pch=c(1,2,3),col=1:3)
+
+plot(iris$Sepal.Length,type="b", col="blue",lwd=2)
+```
+
+## Multivariate
+```{r}
+library(lattice)
+splom(iris[,-5])
+pairs(iris[,-5],col=as.numeric(as.factor(iris$Species)))
+cor(iris[,-5])
+
+
+```
+
+## apply
+```{r}
+apply(VADeaths,1,mean)
+apply(VADeaths,1,min)
+```
+
+## find class use sapply/lapply
+```{r}
+irisclass<-sapply(iris,class)
+#sdiris<-sapply(iris[,-5],sd)
+smiris2<-sapply(iris[irisclass=="numeric"],summary)
+smiris2
+sdiris3<-sapply(iris[irisclass=="numeric"],sd)
+sdiris3
+```
+
+## aggregate again
+```{r}
+results<-aggregate(iris[,-5],list(iris$Species),mean)
+head(results)
+
+resultssd<-aggregate(iris[,-5],list(iris$Species),sd)
+head(resultssd)
+```
+
