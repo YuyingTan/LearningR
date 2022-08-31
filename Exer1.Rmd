@@ -1,0 +1,118 @@
+---
+title: "Lesson1_Exer1"
+author: "Yuying_Tan"
+date: "August 30, 2022"
+output: 
+  html_document: 
+    toc: yes
+---
+
+## 2. Reading in a table
+
+### 2.1 Open Excel file
+```{r}
+library(readxl)
+DataExtra <- read_excel("DataExtra.xlsx", sheet = 1)
+str(DataExtra)
+names(DataExtra)
+```
+
+### 2.2 Extract variable 
+```{r}
+DataExtra$workshop
+```
+
+## 3. Data types
+
+### 3.1/2 check variable
+```{r}
+class(DataExtra$exam)
+class(DataExtra$gender)
+```
+
+### 3.3 Convert to factor
+```{r}
+gender <- as.factor(DataExtra$gender)
+class(gender)
+```
+
+### 3.4 Convert to factor with three levels
+```{r}
+DataExtra$course <- as.factor(DataExtra$workshop)
+levels(DataExtra$course) <- c("R", "SAS", "SPSS")
+levels(DataExtra$course)
+table(DataExtra$course)
+```
+
+### 3.5 Change name of NA into id
+```{r}
+colnames(DataExtra)[colnames(DataExtra) == "NA"] <- "id"
+colnames(DataExtra)
+```
+
+## 4. Making a new variable
+```{r}
+DataExtra$passexam <- c(ifelse(DataExtra$exam >= 10, "passed", "failed"))
+DataExtra
+```
+
+## 5. Exporting a modified table
+```{r}
+library(readr)
+write_csv(DataExtra, "Result1.csv")
+```
+
+## 6. Indexing
+
+### 6.1 select all months except February
+```{r}
+month.name
+notFeb <- month.name[!month.name == "February"]
+notFeb
+```
+### 6.2 Change variable name
+```{r}
+names(DataExtra)[names(DataExtra) == "gender"] <- "sex"
+DataExtra
+```
+
+### 6.3 Creating matrix
+```{r}
+matrix1 = demo.matrix<-matrix(1:12,nrow=3,byrow=T)
+matrix1[3,1]
+matrix1[,1:2]
+```
+
+### 7. Sorting
+```{r}
+order(DataExtra$exam, decreasing = FALSE)
+DataExtra$exam [order(DataExtra$exam, decreasing = FALSE)]
+```
+### 8. Conditional selection
+```{r}
+subset(DataExtra, course == "SPSS" )
+
+```
+
+### 9. Splitting, stacking and merging files
+```{r}
+female <- DataExtra[DataExtra$sex == "female", ]
+male <- DataExtra[DataExtra$sex != "female", ]
+female
+male
+
+# combine female and male dataframe
+allsex <- rbind(female, male)
+allsex
+
+#read txt then merge
+origin <- read.delim("origin.txt", header = TRUE, sep = "\t", dec=" ")
+origin
+
+colnames(DataExtra)[1]<- "id"
+DataExtra
+
+mergedf <- merge(origin, DataExtra, by = c("id", "id"))
+mergedf
+```
+
