@@ -1,0 +1,311 @@
+---
+title: "Lesson_1_test"
+author: "Yuying"
+date: "August 29, 2022"
+output: 
+  html_document: 
+    toc: yes
+---
+
+## Basic commands
+
+Example of some basic math operations
+```{r}
+sqrt(25)
+4+8
+5*8
+```
+
+## Basic plot
+```{r}
+x<-1:19
+plot(x)
+```
+
+## Data types
+
+### Numeric
+```{r}
+# concatenate
+xdata<-c(3,7,4,3)
+xdata
+mean(xdata)
+```
+
+### Character
+
+```{r}
+names<-c("sherry","susie","iris","this is r course")
+names
+```
+
+### Factor
+
+```{r}
+# non norminal
+fact1<-c("low","low","high","moderate","high","moderate")
+fact1
+# get frequencies
+table(fact1)
+barplot(table(fact1))
+
+```
+
+### nominal
+
+```{r}
+
+nomfac<-c("m","f","x","x","m","f","x","x")
+nomfac
+nomtab<-table(nomfac)
+barplot(nomtab)
+```
+
+### logical
+
+```{r}
+ans<-c("T","F","T","F","T","F","T","F")
+ans
+anstab<-table(ans)
+barplot(anstab)
+```
+
+### variable type
+
+```{r}
+class(ans)
+class(xdata)
+```
+
+### convert between data types
+
+```{r}
+factfact1<-as.factor(fact1)
+factfact1
+```
+
+### exercise
+
+```{r}
+ex1<-c(1,"two",3,"four")
+ex2<-c(3.14,5,8,1.2)
+ex3<-c("Belgium","Spain","France")
+ex4<-c("true","false","true")
+ex5<-c(F,F,F,T)
+class(ex1)
+class(ex2)
+class(ex3)
+class(ex4)
+class(ex5)
+```
+
+## Data structures
+
+### constant
+
+```{r}
+a<-7
+b<-14.5
+c<--5
+a
+b
+c
+```
+
+### vectors
+
+#### c()
+```{r}
+xvec<-c(4,3,5,7)
+xvec
+```
+
+#### index
+```{r}
+xvec2<-1:10
+xvec2
+```
+
+#### rep
+```{r}
+xvec3<-rep(1:5,3)
+xvec3
+```
+
+#### seq
+```{r}
+xvec4<-seq(0,5,0.5)
+xvec4
+```
+
+#### random number generation
+```{r}
+# if you want everytime same output set.seed(2022)
+rdataunif<-runif(5)
+rdataunif
+
+## benomial
+radatbin<-rbinom(10,1,0.5)
+radatbin
+
+##binomial
+radatbin2<-rbinom(10,5,0.4)
+radatbin2
+
+## standard normal
+rdatanorm<-rnorm(30)
+rdatanorm
+hist(rdatanorm)
+
+## standard normal
+rdatanorm1<-rnorm(30,3,4)
+rdatanorm1
+hist(rdatanorm1)
+```
+#### Matrix
+
+```{r}
+xmat1<-matrix(1:12, nrow=3,byrow=T)
+xmat1
+
+xmat2<-matrix(1:12, nrow=4)
+xmat2
+```
+
+#### dataframe
+```{r}
+x1<-c("sherry","susie","iris","kent")
+y1<-c(1,3,5,6)
+mydata<-data.frame(x1,y1)
+mydata
+
+str(mydata)
+
+##matrix to dataframe
+matrixttodf<-as.data.frame(xmat1)
+matrixttodf
+names(matrixttodf)<-c("sherry","iris","susie","kent")
+matrixttodf
+```
+### lists
+```{r}
+xlist<-list(x1,y1,matrixttodf)
+xlist[[3]]
+```
+
+### exercise
+```{r}
+set.seed(258)
+test<-runif(10)
+test
+test[3]
+test<-test[10:1]
+test
+test[3]
+test[3:6]
+## drop columns 3 to 6
+test[-c(3:6)]
+
+test1<-c(1,2,3,4,5,6,7)
+test1
+test1>5
+
+## quick check
+X = 4
+Y = 6
+
+X >= 0 & Y < 10
+X != 4
+Y == 6
+X+Y >0 | Y-X < 0
+
+k=c("b","g","r","d")
+k[k=="r"]
+
+k[k!="r"]
+```
+
+## Functions
+
+## Packages
+```{r}
+#install.packages("graphics")
+library(graphics)
+```
+
+
+## Data import/export
+
+### R built-in data
+```{r}
+str(cars)
+names(cars)
+hist(cars$speed)
+```
+
+### tab-delimated
+
+```{r}
+origin<-read.delim("origin.txt")
+
+## > origin <- read.delim("C:/Users/YTan/Desktop/R exercise/origin.txt", comment.char="#")
+```
+
+### csv
+```{r}
+data<-read.csv("Data.csv")
+head(data)
+```
+
+### Excel file
+```{r}
+library(readxl)
+xlData <- read_excel("Data.xlsx")
+head(xlData)
+
+## use xlsx paclage
+#library(xlsx)
+#newdata<-read.xlsx("Data.xlsx",1)
+#head(newdata)
+```
+
+### Exporting data
+```{r}
+write.table(xlData,"exportedxlfile.txt")
+## write.xlsx(xlData,"exportedxlfile.txt")
+library(readr)
+write_csv(xlData,"exportedxlfile.csv")
+```
+
+## Data manipulation
+
+### subsetting
+```{r}
+library(readr)
+Data<-read.csv("Data.csv")
+head(Data)
+
+#subset
+dtafem<-subset(Data,gender=="female")
+head(dtafem)
+
+dtafem2<-subset(Data,gender=="female"&exam<=14)
+head(dtafem2)
+
+dtafem3<-subset(Data,gender=="female"|exam>10)
+dtafem3
+```
+
+## Merge two datasets
+```{r}
+setos_Sepal<-subset(iris,Species=="setosa",select=c("Sepal.Length","Sepal.Width"))
+setos_Sepal$ID<-paste0(1:50,"id")
+
+setos_Petal<-subset(iris,Species=="setosa",select=c("Petal.Length","Petal.Width"))
+setos_Petal$ID<-paste0(1:50,"id")
+
+## merge two files
+seto<-merge(setos_Sepal,setos_Petal,by="ID")
+head(seto)
+```
+
