@@ -1,0 +1,155 @@
+---
+title: "Lesson3_Building_model"
+author: "Yuying_Tan"
+date: "September 1, 2022"
+output: 
+  html_document: 
+    toc: yes
+---
+
+## Read in data
+```{r message=FALSE, warning=FALSE}
+library(readr)
+HairEyeColor <- read_csv("HairEyeColor.csv")
+```
+
+## Hypothesis testing
+
+### one sample prop
+```{r}
+eyecoltab<-table(HairEyeColor$eye)
+prop.table(eyecoltab)
+browncount<-eyecoltab["Brown"]
+neye<-sum(eyecoltab)
+
+prop.test(browncount,neye,p=0.5)
+```
+
+### more than 2 levels
+H
+0 : p black=0.2 and p brown=0.2 and p blond=0.5 and p red=0.1
+```{r}
+prop.table(table(HairEyeColor$hair))
+
+# use chi.square test
+
+chisq.test(table(HairEyeColor$hair),p=c(0.2,0.2,0.5,0.1))
+```
+
+### 2 category
+```{r}
+chisq.test(table(HairEyeColor$eye,HairEyeColor$hair))
+```
+
+## Continous
+
+### one sample
+```{r}
+mean(iris$Sepal.Length)
+t.test(iris$Sepal.Length)
+
+qqnorm(iris$Sepal.Length)
+qqline(iris$Sepal.Length)
+
+# t-test depends on normal distribution of the data
+# use shapiro can test the normal distributioon of data
+shapiro.test(iris$Sepal.Length)
+# after log operation the data is normal distribution
+logsl<-log10(iris$Sepal.Length)
+shapiro.test(logsl)
+
+t.test(logsl)
+
+### compare with 6
+t.test(iris$Sepal.Length, mu=6)
+```
+
+### two samples
+```{r}
+# create 2 samples
+versicolorsl<-iris$Sepal.Length[iris$Species=="versicolor"]
+virginisl<-iris$Sepal.Length[iris$Species=="virginica"]
+
+boxplot(versicolorsl)
+boxplot(virginisl)
+
+iris2pop<-iris[iris$Species!="setosa",]
+boxplot(iris2pop$Sepal.Length~iris2pop$Species)
+
+t.test(virginisl,versicolorsl, var.equal=T)
+
+## equal
+
+## unequal
+t.test(virginisl,versicolorsl, var.equal=F)
+
+
+## non-parameter test, applies to data that normal distribution failed
+wilcox.test(virginisl,versicolorsl)
+
+shapiro.test(versicolorsl)
+shapiro.test(virginisl)
+```
+
+## Linear models
+
+### tannin data
+```{r}
+tannindata <- read.delim("C:/Users/YTan/Desktop/LearnR/Lesson_3_Building_model/tannin.txt")
+names(tannindata)
+
+mod_tannin<-lm(growth~tannin, data=tannindata)
+plot(tannindata$tannin,tannindata$growth)
+hist(tannindata$growth)
+summary(mod_tannin)
+```
+
+### model checking
+```{r}
+plot(mod_tannin, which=1)
+plot(mod_tannin, which=2)
+plot(mod_tannin, which=3)
+plot(mod_tannin, which=4)
+```
+
+### iris
+```{r}
+irismod<-lm(Petal.Length~Petal.Width, data=iris, subset=-c(115,142,135,130,108,23,146,145,123))
+summary(irismod)
+plot(irismod, which=1)
+plot(irismod, which=2)
+plot(irismod, which=3)
+plot(irismod, which=4)
+```
+
+### ANOVA
+```{r}
+gainsdata<-read.delim("growth.txt",header=T)
+str(gainsdata)
+gainsdata$supplement<-as.factor(gainsdata$supplement)
+
+boxplot(gainsdata$gain~gainsdata$supplement)
+gainsdata$supplement<-relevel(gainsdata$supplement,ref="control")
+
+avmod<-lm(gain~supplement,data=gainsdata)
+summary(avmod)
+```
+
+### ANCOVA
+```{r}
+Fruitdata<-read.delim("Fruit.txt",header=T)
+str(Fruitdata)
+Fruitdata$Grazing<-as.factor(Fruitdata$Grazing)
+
+attach(Fruitdata)
+plot(Root,Fruit)
+boxplot(Fruit~Grazing)
+library(lattice)
+xyplot(Fruit~Root|Grazing)
+
+fruitmodel1<-lm(Fruit~Root+Grazing+Root*Grazing,data=Fruitdata)
+fruitmodel2<-lm(Fruit~Root+Grazing,data=Fruitdata)
+summary(fruitmodel1)
+summary(fruitmodel2)
+```
+
