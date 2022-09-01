@@ -11,3 +11,6 @@ Basic: Read in/out data, data structure, dataframe manipulation
 
 ## Lesson2
 Middle level: Data visualization 
+
+## Lesson3
+Building basic model
